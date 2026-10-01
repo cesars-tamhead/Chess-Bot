@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sierra Chess</title><meta name="description" content="A three-screen chess app powered by Cesar Sierra's C++ engine.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='5' fill='%23ece6d9'/%3E%3Ctext x='4' y='26' font-size='27' fill='%232c2925'%3E%E2%99%9A%3C/text%3E%3C/svg%3E">
+<style>
+/* Reference-inspired palette: parchment, orange controls, and a wooden board. */
+:root{color-scheme:light;--paper:#ece6d9;--ink:#302c27;--orange:#e59a48;--sun:#ffba4c;--light:#eed9b5;--dark:#b98761;--muted:#7a6a58;--line:#cabbA6}*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}button,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.5;cursor:default}button:focus-visible,select:focus-visible{outline:3px solid #765536;outline-offset:3px}button{touch-action:manipulation}.app{max-width:520px;margin:0 auto;min-height:100svh;padding:22px 22px 18px}.screen{min-height:calc(100svh - 40px);display:flex;flex-direction:column}.menu{text-align:center;align-items:center;justify-content:space-between;padding-top:clamp(36px,10vh,100px);padding-bottom:30px}.logo{display:flex;width:166px;height:164px;border:3px solid var(--ink);margin:0 auto 10px}.logo span{width:50%;display:grid;place-items:center;font:94px/1 Georgia,"DejaVu Sans",serif}.logo span:first-child{background:var(--ink);color:var(--paper)}.logo span:last-child{background:var(--paper);color:var(--ink)}h1{font-family:Impact,"Arial Narrow",sans-serif;font-size:58px;letter-spacing:-.04em;line-height:1.05;margin:0}h1 span{display:block;font-family:system-ui,sans-serif;font-size:12px;letter-spacing:.25em;font-weight:650;margin-top:12px;color:var(--muted)}.menu-actions{width:100%;max-width:365px;margin-top:55px}.btn{border:0;border-radius:5px;padding:12px 18px;color:var(--ink);background:var(--orange);font-weight:750;box-shadow:0 3px 0 #a98c69;min-height:46px}.btn:hover:not(:disabled){filter:brightness(1.045)}.play{width:100%;font-size:22px}.menu-row{display:flex;gap:11px;margin-top:17px}.menu-row .btn{flex:1;font-size:15px;color:var(--ink);background:#dfd1bd;box-shadow:0 3px 0 #baa58a}.menu-credit{color:var(--muted);font-size:13px;margin-top:30px}.menu-settings{width:100%;text-align:left;background:#e1d4bf;border-radius:9px;margin-top:20px;padding:16px}.menu-settings label{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:7px 0;font-size:14px}select{border:1px solid #b49d80;background:var(--paper);padding:7px;border-radius:5px;color:var(--ink)}.instructions{font-size:14px;text-align:left;margin:17px 0 0;color:var(--muted)}.instructions p{margin:8px 0}.game-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:19px}.game-header h2{margin:0;font-family:Georgia,serif;font-size:25px;font-weight:500}.icon-btn{background:none;border:0;color:var(--muted);font-size:14px;padding:8px 0}.controls{margin-bottom:16px}.segments{display:flex;align-items:center;gap:4px;background:#b8a086;border-radius:25px;padding:5px;max-width:360px;margin:0 auto}.segments button{flex:1;border:0;background:none;border-radius:22px;font-size:13px;padding:9px 5px;color:#fff;font-weight:650}.segments button.active{background:var(--sun);color:var(--ink)}.color-choice{display:flex;justify-content:center;gap:4px;align-items:center;margin:10px auto 0;background:#b8a086;border-radius:25px;padding:5px;width:180px}.color-choice button{border:0;background:none;border-radius:20px;padding:7px 12px;font-size:13px;color:#fff;font-weight:650}.color-choice button.active{background:var(--sun);color:var(--ink)}.player-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted);margin:0 0 7px}.player-row strong{font-weight:650}.player-row.bottom{margin:9px 0 0}.board-frame{border:4px solid #554333;border-radius:3px;overflow:hidden;box-shadow:0 3px 0 #b5a18b}.board{display:grid;grid-template-columns:repeat(8,1fr);aspect-ratio:1}.square{position:relative;border:0;padding:0;background:var(--light);display:grid;place-items:center;aspect-ratio:1;min-width:0}.square.dark{background:var(--dark)}.piece{font:clamp(24px,8vw,49px)/1 "DejaVu Sans","Segoe UI Symbol","Apple Symbols",serif;pointer-events:none;filter:drop-shadow(0 1px 1px #0003)}.piece.white{color:#fffaf0;-webkit-text-stroke:.65px #80694f}.piece.black{color:#26221c;-webkit-text-stroke:.35px #d5bc98}.square.last{box-shadow:inset 0 0 0 100px #f4bc474f}.square.selected{box-shadow:inset 0 0 0 4px #efac25}.square.target:after{content:"";position:absolute;width:25%;height:25%;border-radius:50%;background:#5b45275e;pointer-events:none}.square.capture:after{content:"";position:absolute;width:86%;height:86%;border-radius:50%;border:4px solid #7d4c32aa;pointer-events:none}.square.checked{background:#cf7565}.coord{position:absolute;font-size:10px;font-weight:700;line-height:1;color:#785535;pointer-events:none}.dark .coord{color:#f6e5c8}.rank{top:3px;left:3px}.file{bottom:3px;right:3px}.turn{margin:15px 0 8px;background:var(--sun);border-radius:6px;padding:11px;text-align:center;font-size:14px;font-weight:750;letter-spacing:.055em;box-shadow:0 2px 0 #cba064}.thinking .turn{background:#e7aa59}.hint{color:var(--muted);font-size:13px;min-height:20px;text-align:center;margin:0 0 13px}.game-actions{display:flex;gap:10px}.game-actions button{flex:1;border:1px solid #bfae97;background:#e5dac7;color:var(--ink);border-radius:5px;padding:9px;font-size:14px}.game-actions .resign{color:#915c3c}.search-info{display:flex;justify-content:center;flex-wrap:wrap;gap:7px 13px;color:var(--muted);font-size:12px;margin:14px 0 10px;font-variant-numeric:tabular-nums}details{margin-top:7px;border-top:1px solid #cbbbA5;padding-top:11px}summary{color:var(--muted);font-size:14px;cursor:pointer}.moves{font-size:14px;max-height:165px;overflow:auto;margin-top:9px}.move-row{display:grid;grid-template-columns:34px 1fr 1fr;padding:6px 10px;border-radius:3px}.move-row:nth-child(odd){background:#dfd2bc}.empty{color:var(--muted);font-size:13px;padding:12px 0}.result{text-align:center;align-items:center;justify-content:center;gap:20px;padding-bottom:25px}.result-piece{height:145px;width:145px;border:2px solid var(--ink);display:grid;place-items:center;font:104px Georgia;background:#e3d5bf;box-shadow:6px 6px 0 #c7b59a;margin-bottom:8px}.result h2{font-family:Impact,"Arial Narrow",sans-serif;font-size:44px;letter-spacing:-.015em;margin:0;line-height:1.1}.result .reason{font-size:15px;color:var(--muted);margin:9px 0 0}.result-summary{background:#e3d7c3;border-radius:8px;padding:12px 25px;font-size:14px;color:var(--muted)}.result-buttons{width:100%;max-width:360px;margin-top:12px}.result-buttons .btn{width:100%;margin-bottom:13px}.result-buttons .secondary{background:#dfd1bd;color:var(--ink);box-shadow:0 3px 0 #baa58a}.offline,.error{font-size:13px;line-height:1.5;background:#f3dcb9;border:1px solid #d4b07d;border-radius:6px;padding:12px;margin-bottom:14px}.offline code{font-size:13px}.error{color:#854334;margin-top:12px}dialog{background:var(--paper);color:var(--ink);border:2px solid #b29b7d;border-radius:9px;max-width:340px;width:90%;padding:22px}dialog::backdrop{background:#362a2070}dialog h2{font-family:Georgia,serif;margin:0;font-size:23px}dialog p{font-size:14px;color:var(--muted)}.promotion-options{display:flex;gap:7px}.promotion-options button{font-size:31px;flex:1;padding:10px;color:var(--ink);background:var(--sun)}.cancel{width:100%;margin-top:16px;background:#ded1bc;color:var(--ink)}.kbd-note{font-size:13px}.screen:focus{outline:none}@media(min-width:700px){body{background:#d9cdbb}.app{margin:24px auto;min-height:calc(100svh - 48px);border-radius:15px;background:var(--paper);box-shadow:0 18px 70px #5b432027;padding:25px 28px}.screen{min-height:calc(100svh - 98px)}.menu{padding-top:50px}}@media(max-width:360px){.app{padding:16px 12px}.piece{font-size:8vw}.segments button{font-size:12px}.game-actions{gap:6px}.game-actions button{font-size:13px}}@media(prefers-reduced-motion:no-preference){.screen{animation:appear .18s ease}@keyframes appear{from{opacity:.5;transform:translateY(5px)}to{opacity:1;transform:none}}}
+</style>
+</head>
+<body>
+<div class="app">
+<div id="offline" class="offline" hidden>Connecting the chess engine…</div>
+<!-- Screen 1: a minimal main menu inspired by the supplied first reference. -->
+<section class="screen menu" id="menu-screen" tabindex="-1" aria-label="Main menu">
+<div><div class="logo" aria-hidden="true"><span>♚</span><span>♚</span></div><h1>CHESS<span>CESAR SIERRA</span></h1></div>
+<div class="menu-actions"><button class="btn play" id="play" disabled>Play</button><div class="menu-row"><button class="btn" id="settings-toggle" aria-expanded="false">Settings</button><button class="btn" id="help-toggle" aria-expanded="false">How to play</button></div>
+<div class="menu-settings" id="menu-settings" hidden><label>Play as<select id="menu-color"><option value="w">White</option><option value="b">Black</option></select></label><label>Difficulty<select id="menu-difficulty"><option value="easy">Easy</option><option value="medium">Medium</option><option value="hard" selected>Hard</option></select></label></div>
+<div class="instructions" id="instructions" hidden><p>Choose a piece, then a highlighted square. Pawns promote when they reach the last rank.</p><p>You can undo a turn, flip the board, or resign. Hard gives the bot its full search budget.</p></div>
+<div class="menu-credit">Your own chess bot</div></div>
+</section>
+<!-- Screen 2: interactive gameplay, legal-move hints, difficulty, and resignation. -->
+<section class="screen game" id="game-screen" hidden tabindex="-1" aria-label="Chess game">
+<div class="game-header"><button class="icon-btn" id="game-menu">Menu</button><h2>Chess</h2><button class="icon-btn" id="flip">Flip</button></div>
+<div class="controls"><div class="segments" role="group" aria-label="Difficulty"><button data-level="easy" aria-pressed="false">EASY</button><button data-level="medium" aria-pressed="false">MEDIUM</button><button data-level="hard" class="active" aria-pressed="true">HARD</button></div><div class="color-choice" role="group" aria-label="Your color"><button data-color="w" class="active" aria-pressed="true">WHITE</button><button data-color="b" aria-pressed="false">BLACK</button></div></div>
+<div class="player-row"><strong id="top-name">Sierra Bot · Black</strong><span id="bot-label">Hard</span></div>
+<div class="board-frame"><div id="board" class="board" aria-label="Chessboard"></div></div>
+<div class="player-row bottom"><strong id="bottom-name">You · White</strong><span id="move-number">Move 1</span></div>
+<div class="turn" id="turn" role="status">WHITE'S TURN</div><p class="hint" id="hint" aria-live="polite">Select a piece to see its legal moves.</p>
+<div class="game-actions"><button id="undo">Undo turn</button><button id="claim" hidden>Claim draw</button><button class="resign" id="resign">Resign</button></div>
+<div class="search-info" id="search-info">Bot search: up to 3.2 seconds</div>
+<details><summary>Move history <span id="move-count">(0)</span></summary><div class="moves" id="moves"><div class="empty">Make your first move.</div></div></details>
+<div id="error" class="error" role="alert" hidden></div>
+</section>
+<!-- Screen 3: shared result screen for checkmate, resignation, and draws. -->
+<section class="screen result" id="result-screen" hidden tabindex="-1" aria-label="Game result">
+<div class="result-piece" id="result-piece" aria-hidden="true">♚</div><div><h2 id="result-title">YOU WIN</h2><p class="reason" id="result-reason">Checkmate.</p></div><div class="result-summary" id="result-summary">A game well played.</div><div class="result-buttons"><button class="btn" id="again">Play again</button><button class="btn secondary" id="result-menu">Main menu</button></div>
+</section>
+</div>
+<dialog id="promotion"><h2>Promote your pawn</h2><p>Choose the piece you want.</p><div class="promotion-options"><button class="btn" data-promotion="q" aria-label="Queen">♕</button><button class="btn" data-promotion="r" aria-label="Rook">♖</button><button class="btn" data-promotion="b" aria-label="Bishop">♗</button><button class="btn" data-promotion="n" aria-label="Knight">♘</button></div><button class="btn cancel" id="cancel-promotion">Cancel</button></dialog>
+<script>
+// Browser engine fallback: the same board representation, legal rules, and timed search.
+// It runs in a Web Worker so thinking does not block clicks or screen rendering.
+function createBrowserEngine(){
+ const VALUE=[0,100,320,330,500,900,0],INF=1000000,MATE=100000;
+ const sign=n=>(n>0)-(n<0),inside=(f,r)=>f>=0&&f<8&&r>=0&&r<8;
+ const notation=s=>String.fromCharCode(97+s%8)+(Math.floor(s/8)+1);
+ const coord=s=>s.charCodeAt(0)-97+(Number(s[1])-1)*8;
+ const moveText=m=>notation(m.from)+notation(m.to)+(m.promotion?' pnbrqk'[m.promotion]:'');
+ const clone=p=>({...p,board:p.board.slice()});
+ const dirs=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
+ const knights=[[1,2],[2,1],[2,-1],[1,-2],[-1,-2],[-2,-1],[-2,1],[-1,2]];
+ // Read the six FEN fields, using a1=0 and positive pieces for White.
+ function load(fen){
+  const fields=fen.split(' '),p={board:Array(64).fill(0),turn:fields[1]==='w'?1:-1,castling:0,ep:fields[3]==='-'?-1:coord(fields[3]),halfmove:Number(fields[4]),fullmove:Number(fields[5])};
+  let r=7,f=0;
+  for(const c of fields[0]){if(c==='/'){--r;f=0;}else if(/[1-8]/.test(c))f+=Number(c);else{const kind=' pnbrqk'.indexOf(c.toLowerCase());p.board[r*8+f++]=kind*(c===c.toUpperCase()?1:-1);}}
+  for(const [letter,bit] of [['K',1],['Q',2],['k',4],['q',8]])if(fields[2].includes(letter))p.castling|=bit;
+  return p;
+ }
+ function fen(p){
+  let text='';
+  for(let r=7;r>=0;--r){let empty=0;for(let f=0;f<8;++f){const piece=p.board[r*8+f];if(!piece){++empty;continue;}if(empty){text+=empty;empty=0;}const c=' pnbrqk'[Math.abs(piece)];text+=piece>0?c.toUpperCase():c;}if(empty)text+=empty;if(r)text+='/';}
+  let rights='';for(const [letter,bit] of [['K',1],['Q',2],['k',4],['q',8]])if(p.castling&bit)rights+=letter;
+  return `${text} ${p.turn===1?'w':'b'} ${rights||'-'} ${p.ep<0?'-':notation(p.ep)} ${p.halfmove} ${p.fullmove}`;
+ }
+ // Attack detection includes pawn diagonals and adjacent kings, even for pinned pieces.
+ function attacked(p,s,color){
+  const f=s%8,r=Math.floor(s/8),pr=r-color;
+  for(const df of [-1,1])if(inside(f+df,pr)&&p.board[pr*8+f+df]===color)return true;
+  for(const [df,dr] of knights)if(inside(f+df,r+dr)&&p.board[(r+dr)*8+f+df]===2*color)return true;
+  for(let i=0;i<8;++i){let [df,dr]=dirs[i],x=f+df,y=r+dr,d=1;while(inside(x,y)){const piece=p.board[y*8+x];if(piece){const k=Math.abs(piece);if(sign(piece)===color&&(k===5||(i<4&&k===4)||(i>=4&&k===3)||(d===1&&k===6)))return true;break;}x+=df;y+=dr;++d;}}
+  return false;
+ }
+ function inCheck(p,color){return attacked(p,p.board.indexOf(6*color),-color);}
+ // Apply special moves and update castling, en passant, and draw counters.
+ function make(p,m){
+  const next=clone(p),piece=p.board[m.from],color=p.turn;let captured=p.board[m.to];next.board[m.from]=0;
+  if(m.ep){captured=p.board[m.to-8*color];next.board[m.to-8*color]=0;}
+  next.board[m.to]=m.promotion?m.promotion*color:piece;
+  if(m.castle){const rf=m.to>m.from?m.from+3:m.from-4,rt=m.to>m.from?m.from+1:m.from-1;next.board[rt]=next.board[rf];next.board[rf]=0;}
+  if(piece===6)next.castling&=~3;if(piece===-6)next.castling&=~12;
+  for(const square of [m.from,m.to]){if(square===0)next.castling&=~2;if(square===7)next.castling&=~1;if(square===56)next.castling&=~8;if(square===63)next.castling&=~4;}
+  next.ep=Math.abs(piece)===1&&Math.abs(m.to-m.from)===16?(m.from+m.to)/2:-1;
+  next.halfmove=Math.abs(piece)===1||captured?0:p.halfmove+1;next.fullmove=p.fullmove+(color===-1?1:0);next.turn=-color;return next;
+ }
+ function pseudo(p){
+  const moves=[],color=p.turn;
+  const add=(from,to,ep=false,castle=false)=>{if(Math.abs(p.board[from])===1&&[0,7].includes(Math.floor(to/8)))for(const promotion of [5,4,3,2])moves.push({from,to,promotion,ep,castle});else moves.push({from,to,promotion:0,ep,castle});};
+  for(let s=0;s<64;++s){if(sign(p.board[s])!==color)continue;const f=s%8,r=Math.floor(s/8),kind=Math.abs(p.board[s]);
+   if(kind===1){const nr=r+color;if(inside(f,nr)&&!p.board[nr*8+f]){add(s,nr*8+f);if(r===(color===1?1:6)&&!p.board[(r+2*color)*8+f])add(s,(r+2*color)*8+f);}for(const df of [-1,1])if(inside(f+df,nr)){const to=nr*8+f+df,target=p.board[to];if(sign(target)===-color&&Math.abs(target)!==6)add(s,to);if(to===p.ep&&!target&&p.board[to-8*color]===-color)add(s,to,true);}}
+   else if(kind===2){for(const [df,dr] of knights)if(inside(f+df,r+dr)){const to=(r+dr)*8+f+df;if(sign(p.board[to])!==color&&Math.abs(p.board[to])!==6)add(s,to);}}
+   else{for(let i=0;i<8;++i){if((kind===3&&i<4)||(kind===4&&i>=4))continue;const [df,dr]=dirs[i];let x=f+df,y=r+dr;while(inside(x,y)){const to=y*8+x,target=p.board[to];if(sign(target)===color)break;if(Math.abs(target)!==6)add(s,to);if(target||kind===6)break;x+=df;y+=dr;}}
+    if(kind===6){const home=color===1?4:60,ks=color===1?1:4,qs=color===1?2:8;if(s===home&&!inCheck(p,color)){if((p.castling&ks)&&p.board[home+3]===4*color&&!p.board[home+1]&&!p.board[home+2]&&!attacked(p,home+1,-color)&&!attacked(p,home+2,-color))add(s,home+2,false,true);if((p.castling&qs)&&p.board[home-4]===4*color&&!p.board[home-1]&&!p.board[home-2]&&!p.board[home-3]&&!attacked(p,home-1,-color)&&!attacked(p,home-2,-color))add(s,home-2,false,true);}}
+   }
+  }
+  return moves;
+ }
+ function legal(p){return pseudo(p).filter(m=>!inCheck(make(p,m),p.turn));}
+ // Repetition identity excludes counters and en passant targets that cannot be used.
+ function key(p){let ep=-1;if(p.ep>=0&&legal(p).some(m=>m.ep))ep=p.ep;return p.board.map(n=>String.fromCharCode(n+70)).join('')+'|'+p.turn+'|'+p.castling+'|'+ep;}
+ function repeats(p,h){const k=key(p);return h.reduce((n,item)=>n+(item===k),0);}
+ function insufficient(p){let minors=0,bishops=0,color=-1,same=true;for(let s=0;s<64;++s){const k=Math.abs(p.board[s]);if(!k||k===6)continue;if(k===1||k===4||k===5)return false;++minors;if(k===3){++bishops;const c=(s%8+Math.floor(s/8))%2;if(color>=0&&color!==c)same=false;color=c;}}return minors<=1||(minors===bishops&&same);}
+ function claim(p,h){return p.halfmove>=100||repeats(p,h)>=3;}
+ function status(p,h,moves=legal(p)){if(!moves.length)return inCheck(p,p.turn)?1:2;if(insufficient(p))return 3;if(repeats(p,h)>=5)return 4;if(p.halfmove>=150)return 5;return 0;}
+ function boardState(p,h){const moves=legal(p);return {fen:fen(p),key:key(p),board:p.board,turn:p.turn===1?'w':'b',legal:moves.map(moveText),status:status(p,h,moves),check:inCheck(p,p.turn),canClaim:claim(p,h)};}
+ function evaluate(p){let score=0,phase=0;for(const piece of p.board)phase+=Math.abs(piece)===5?4:Math.abs(piece)===4?2:[2,3].includes(Math.abs(piece))?1:0;phase=Math.min(24,phase);
+  for(let s=0;s<64;++s){const piece=p.board[s];if(!piece)continue;const color=sign(piece),k=Math.abs(piece),f=s%8,r=Math.floor(s/8),advance=color===1?r:7-r,center=14-Math.abs(2*f-7)-Math.abs(2*r-7);let bonus=k===1?advance*7+center*2:k===2?center*5:k===3?center*3:k===4?advance*2:k===5?center:0;
+   if(k===6){let middle=-center*3-advance*8;if(advance===0&&(f===2||f===6))middle+=30;bonus=Math.round((middle*phase+center*5*(24-phase))/24);}score+=color*(VALUE[k]+bonus);}
+  return p.turn*score;
+ }
+ const priority=(p,m,preferred)=>moveText(m)===preferred?1000000:(p.board[m.to]||m.ep?10000+10*VALUE[m.ep?1:Math.abs(p.board[m.to])]-VALUE[Math.abs(p.board[m.from])]:0)+(m.promotion?8000+VALUE[m.promotion]:0);
+ function order(p,moves,preferred=''){return moves.sort((a,b)=>priority(p,b,preferred)-priority(p,a,preferred));}
+ // Iterative deepening always preserves a completed answer before time runs out.
+ function search(p,h,difficulty){
+  const start=performance.now(),deadline=start+3200,soft=start+2800,maxDepth=difficulty==='easy'?2:difficulty==='medium'?4:64,timeout={};let nodes=0;const table=new Map();
+  const clock=()=>{if(performance.now()>=deadline)throw timeout;};
+  const childHistory=(next,hist)=>{const list=hist.slice();list.push(key(next));return list;};
+  function terminal(p,hist,moves,ply){if(!moves.length)return inCheck(p,p.turn)?-MATE+ply:0;if(insufficient(p)||p.halfmove>=150||repeats(p,hist)>=5)return 0;return null;}
+  function quiet(p,alpha,beta,ply,hist,qdepth){clock();++nodes;let moves=legal(p);const done=terminal(p,hist,moves,ply);if(done!==null)return done;const drawing=claim(p,hist),check=inCheck(p,p.turn);if(drawing){if(beta<=0)return 0;alpha=Math.max(alpha,0);}if(ply>=80||qdepth>=20)return Math.max(drawing?0:-INF,evaluate(p));
+   if(!check){const stand=evaluate(p);if(stand>=beta)return stand;alpha=Math.max(alpha,stand);moves=moves.filter(m=>p.board[m.to]||m.ep||m.promotion);}order(p,moves);
+   for(const m of moves){const next=make(p,m),nh=childHistory(next,hist);let value=-quiet(next,-beta,-alpha,ply+1,nh,qdepth+1);if(claim(next,nh))value=Math.max(value,0);if(value>=beta)return value;alpha=Math.max(alpha,value);}return alpha;
+  }
+  const packed=(score,ply)=>score>99000?score+ply:score< -99000?score-ply:score;
+  const unpacked=(score,ply)=>score>99000?score-ply:score< -99000?score+ply:score;
+  function alphaBeta(p,depth,alpha,beta,ply,hist){clock();if(depth<=0)return quiet(p,alpha,beta,ply,hist,0);++nodes;const moves=legal(p),done=terminal(p,hist,moves,ply);if(done!==null)return done;const drawing=claim(p,hist);if(ply>=80)return Math.max(drawing?0:-INF,evaluate(p));
+   const originalAlpha=alpha,cacheKey=key(p)+'|'+p.halfmove+'|'+hist.slice(-p.halfmove-1).join(';'),entry=table.get(cacheKey);let best=drawing?0:-INF,bestMove='';if(drawing){alpha=Math.max(alpha,0);if(alpha>=beta)return 0;}
+   if(entry&&entry.depth>=depth){const score=unpacked(entry.score,ply);if(entry.bound===0||(entry.bound===1&&score>=beta)||(entry.bound===2&&score<=alpha))return score;}
+   order(p,moves,entry?.move);
+   for(const m of moves){const next=make(p,m),nh=childHistory(next,hist);let value=-alphaBeta(next,depth-1,-beta,-alpha,ply+1,nh);if(claim(next,nh))value=Math.max(value,0);if(value>best){best=value;bestMove=moveText(m);}alpha=Math.max(alpha,value);if(alpha>=beta)break;}
+   if(table.size>50000)table.clear();table.set(cacheKey,{depth,score:packed(best,ply),move:bestMove,bound:best<=originalAlpha?2:best>=beta?1:0});return best;
+  }
+  const moves=legal(p);if(status(p,h,moves))return {move:'',claim:false,depth:0,score:0,nodes:0,ms:performance.now()-start};
+  const currentClaim=claim(p,h);let best={move:currentClaim?'':moveText(moves[0]),claim:currentClaim,depth:0,score:0};
+  for(let depth=1;depth<=maxDepth;++depth){if(performance.now()>=soft)break;try{let alpha=currentClaim?0:-INF,result={move:'',claim:currentClaim,depth,score:alpha};order(p,moves,best.move);
+    for(const m of moves){clock();const next=make(p,m),nh=childHistory(next,h);let value=-alphaBeta(next,depth-1,-INF,-alpha,1,nh);const intendedClaim=claim(next,nh)&&value<=0;if(intendedClaim)value=Math.max(value,0);if(value>result.score)result={move:moveText(m),claim:intendedClaim,depth,score:value};alpha=Math.max(alpha,value);}clock();best=result;if(Math.abs(best.score)>99000)break;
+   }catch(error){if(error!==timeout)throw error;break;}}
+  return {...best,nodes,ms:performance.now()-start};
+ }
+ function request(action,fields){const p=load(fields.fen),h=(fields.history||'').split(',').filter(Boolean);if(!h.length||h[h.length-1]!==key(p))h.push(key(p));
+  if(action==='state')return boardState(p,h);
+  if(action==='move'){if(status(p,h))throw Error('Game has ended');const m=legal(p).find(m=>moveText(m)===fields.move);if(!m)throw Error('Illegal move');const next=make(p,m);h.push(key(next));return boardState(next,h);}
+  if(action==='bot')return search(p,h,fields.difficulty);throw Error('Unknown operation');
+ }
+ function perft(p,depth){if(!depth)return 1;const moves=legal(p);if(depth===1)return moves.length;return moves.reduce((n,m)=>n+perft(make(p,m),depth-1),0);}
+ return {request,load,fen,legal,make,key,inCheck,perft,moveText};
+}
+
+// Shared game state. C++ supplies all legal moves, terminal outcomes, and bot choices.
+const START='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+const symbols={1:'♙',2:'♘',3:'♗',4:'♖',5:'♕',6:'♔','-1':'♟','-2':'♞','-3':'♝','-4':'♜','-5':'♛','-6':'♚'};
+const pieceNames=['empty','pawn','knight','bishop','rook','queen','king'];
+const $=id=>document.getElementById(id);
+// Use C++ when served by chessapp; otherwise start the standalone browser engine.
+let engineMode='browser',browserEngine=null,browserWorker=null,workerSequence=0;
+const workerRequests=new Map();
+function startBrowserEngine(){
+ browserEngine=createBrowserEngine();
+ try{
+  const source='const engine=('+createBrowserEngine.toString()+')();onmessage=function(event){const {id,action,fields}=event.data;try{postMessage({id,result:engine.request(action,fields)});}catch(error){postMessage({id,error:error.message});}};';
+  const url=URL.createObjectURL(new Blob([source],{type:'text/javascript'}));
+  browserWorker=new Worker(url);URL.revokeObjectURL(url);
+  browserWorker.onmessage=event=>{const response=event.data,pending=workerRequests.get(response.id);if(!pending)return;workerRequests.delete(response.id);response.error?pending.reject(Error(response.error)):pending.resolve(response.result);};
+  browserWorker.onerror=()=>{const pendingRequests=[...workerRequests.values()];workerRequests.clear();browserWorker.terminate();browserWorker=null;for(const pending of pendingRequests)browserRequest(pending.action,pending.fields).then(pending.resolve,pending.reject);};
+ }catch(error){browserWorker=null;}
+}
+function browserRequest(action,fields){
+ if(browserWorker)return new Promise((resolve,reject)=>{const id=++workerSequence;workerRequests.set(id,{resolve,reject,action,fields});browserWorker.postMessage({id,action,fields});});
+ // Environments without Workers still get legal board play and a bounded bot.
+ return new Promise((resolve,reject)=>setTimeout(()=>{try{resolve(browserEngine.request(action,fields));}catch(error){reject(error);}},20));
+}
+const copyObject=value=>JSON.parse(JSON.stringify(value));
+function initialState(){return {fen:START,board:[4,2,3,5,6,3,2,4,...Array(8).fill(1),...Array(32).fill(0),...Array(8).fill(-1),-4,-2,-3,-5,-6,-3,-2,-4],legal:[],turn:'w',status:0,check:false,canClaim:false};}
+let state=initialState(),history=[],records=[],snapshots=[],human='w',difficulty='hard',flipped=false,selected=null,lastMove='',busy=false,connected=false,ended=false,pendingPromotion=[],lastSearch=null,screen='menu';
+const name=s=>String.fromCharCode(97+s%8)+(Math.floor(s/8)+1);
+const square=s=>(s.charCodeAt(0)-97)+(Number(s[1])-1)*8;
+
+// Show exactly one app screen and put keyboard focus on its heading area.
+function showScreen(next){screen=next;for(const value of ['menu','game','result'])$(value+'-screen').hidden=value!==next;$(next+'-screen').focus();}
+function showError(message){$('error').textContent=message;$('error').hidden=!message;}
+async function api(action,extra={}){
+ const fields={action,fen:state.fen,history:history.join(','),difficulty,...extra};
+ if(engineMode==='browser')return browserRequest(action,fields);
+ const response=await fetch('/api',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(fields)});
+ const data=await response.json();if(!response.ok||data.error)throw Error(data.error||'Engine request failed');return data;
+}
+function setBusy(value){busy=value;$('game-screen').classList.toggle('thinking',value);render();}
+function remember(){snapshots.push({state:copyObject(state),history:[...history],records:copyObject(records),lastMove,lastSearch:copyObject(lastSearch),ended});}
+function applyState(next,move){const piece=state.board[square(move.slice(0,2))];records.push({move,color:state.turn,piece});state=next;history.push(next.key);lastMove=move;selected=null;render();if(state.status)finishGame('terminal');}
+
+// Draw the board and select only destinations approved by the engine.
+function render(){
+ const focusSquare=document.activeElement?.dataset?.square;
+ const board=$('board');board.replaceChildren();
+ for(let row=0;row<8;row++)for(let col=0;col<8;col++){
+  const r=flipped?row:7-row,f=flipped?7-col:col,s=r*8+f,p=state.board[s];
+  const button=document.createElement('button');button.type='button';button.className='square'+((f+r)%2===0?' dark':'');button.dataset.square=name(s);
+  button.setAttribute('aria-label',`${name(s)}: ${p?(p>0?'White ':'Black ')+pieceNames[Math.abs(p)]:'empty'}`);button.setAttribute('aria-pressed',selected===s?'true':'false');
+  if(lastMove&&(name(s)===lastMove.slice(0,2)||name(s)===lastMove.slice(2,4)))button.classList.add('last');
+  if(selected===s)button.classList.add('selected');
+  if(selected!==null&&state.legal.some(m=>m.slice(0,2)===name(selected)&&m.slice(2,4)===name(s)))button.classList.add(p?'capture':'target');
+  if(state.check&&p===(state.turn==='w'?6:-6))button.classList.add('checked');
+  if(p){const span=document.createElement('span');span.className='piece '+(p>0?'white':'black');span.textContent=symbols[p];span.setAttribute('aria-hidden','true');button.append(span);}
+  if(col===0){const label=document.createElement('span');label.className='coord rank';label.textContent=r+1;button.append(label);}
+  if(row===7){const label=document.createElement('span');label.className='coord file';label.textContent=String.fromCharCode(97+f);button.append(label);}
+  button.onclick=()=>clickSquare(s);board.append(button);
+ }
+ if(focusSquare)board.querySelector('[data-square="'+focusSquare+'"]')?.focus({preventScroll:true});
+ const label=color=>(color===human?'You':'Sierra Bot')+' · '+(color==='w'?'White':'Black');
+ $('top-name').textContent=label(flipped?'w':'b');$('bottom-name').textContent=label(flipped?'b':'w');$('move-number').textContent='Move '+state.fen.split(' ')[5];$('bot-label').textContent=difficulty[0].toUpperCase()+difficulty.slice(1);
+ $('turn').textContent=ended?'GAME OVER':busy?'BOT IS THINKING…':(state.turn==='w'?"WHITE'S TURN":"BLACK'S TURN")+(state.check?' · CHECK':'');
+ $('hint').textContent=!connected?'Connecting the chess engine…':ended?'Game finished.':busy?'Searching for the strongest reply.':selected!==null?'Choose a highlighted square.':'Select a piece to see its legal moves.';
+ $('undo').disabled=busy||!snapshots.length||!connected||ended;$('resign').disabled=busy||!connected||ended;$('game-menu').disabled=busy;
+ $('claim').hidden=!state.canClaim||state.turn!==human||busy||ended;
+ for(const b of document.querySelectorAll('[data-level]')){b.classList.toggle('active',b.dataset.level===difficulty);b.setAttribute('aria-pressed',String(b.dataset.level===difficulty));b.disabled=busy;}
+ for(const b of document.querySelectorAll('[data-color]')){b.classList.toggle('active',b.dataset.color===human);b.setAttribute('aria-pressed',String(b.dataset.color===human));b.disabled=busy;}
+ $('move-count').textContent='('+records.length+')';const list=$('moves');list.replaceChildren();
+ if(!records.length){const empty=document.createElement('div');empty.className='empty';empty.textContent='Make your first move.';list.append(empty);}
+ for(let i=0;i<records.length;i+=2){const row=document.createElement('div');row.className='move-row';for(const text of [String(i/2+1)+'.',formatMove(records[i]),records[i+1]?formatMove(records[i+1]):'—']){const span=document.createElement('span');span.textContent=text;row.append(span);}list.append(row);}
+ list.scrollTop=list.scrollHeight;
+ $('search-info').textContent=lastSearch?`${(lastSearch.ms/1000).toFixed(2)} s · Depth ${lastSearch.depth} · ${lastSearch.nodes.toLocaleString()} positions`:'Bot search: up to 3.2 seconds';
+}
+function formatMove(record){return (Math.abs(record.piece)>1?symbols[record.piece]+' ':'')+record.move.slice(0,2)+'–'+record.move.slice(2,4)+(record.move[4]?'='+record.move[4].toUpperCase():'');}
+async function clickSquare(s){
+ if(busy||!connected||ended||state.status||state.turn!==human)return;
+ const candidates=selected===null?[]:state.legal.filter(m=>m.slice(0,2)===name(selected)&&m.slice(2,4)===name(s));
+ if(candidates.length){if(candidates[0].length===5){pendingPromotion=candidates;$('promotion').showModal();}else await humanMove(candidates[0]);return;}
+ if(state.board[s]&&(state.board[s]>0?'w':'b')===human)selected=selected===s?null:s;else selected=null;render();
+}
+async function humanMove(move){
+ remember();setBusy(true);showError('');
+ try{const next=await api('move',{move});applyState(next,move);setBusy(false);if(!ended)await botMove();}
+ catch(e){showError(e.message);setBusy(false);}
+}
+async function botMove(){
+ if(ended||state.status||state.turn===human)return;setBusy(true);
+ try{const result=await api('bot');lastSearch=result;if(result.claim)finishGame('draw');else if(result.move){const next=await api('move',{move:result.move});applyState(next,result.move);}else throw Error('Engine returned no move.');}
+ catch(e){showError(e.message);}
+ finally{setBusy(false);}
+}
+
+// Every completed game uses screen 3, with a distinct reason and outcome.
+function finishGame(reason){
+ ended=true;selected=null;
+ let title='DRAW',detail='The game ended in a draw.',piece='♔';
+ if(reason==='resign'){title='YOU LOSE';detail='You resigned. Sierra Bot wins.';piece='♚';}
+ else if(state.status===1){const won=state.turn!==human;title=won?'YOU WIN':'YOU LOSE';detail=won?'Checkmate. You defeated Sierra Bot.':'Checkmate. Sierra Bot wins.';piece=won?'♔':'♚';}
+ else if(state.status){detail=({2:'Draw by stalemate.',3:'Draw: insufficient mating material.',4:'Draw by fivefold repetition.',5:'Draw by the 75-move rule.'})[state.status];}
+ else if(reason==='draw')detail='A draw was claimed.';
+ $('result-title').textContent=title;$('result-reason').textContent=detail;$('result-piece').textContent=piece;
+ $('result-summary').textContent=`${records.length} moves played · ${difficulty[0].toUpperCase()+difficulty.slice(1)} difficulty`;
+ render();showScreen('result');
+}
+
+// Reset board/history for Play or Play again; the chosen color and difficulty remain.
+async function startGame(){
+ if(busy)return;state=initialState();history=[];records=[];snapshots=[];selected=null;lastMove='';lastSearch=null;ended=false;flipped=human==='b';showError('');render();showScreen('game');
+ if(!connected)return;
+ setBusy(true);try{state=await api('state');history=[state.key];setBusy(false);await botMove();}catch(e){showError(e.message);setBusy(false);}
+}
+async function changeSettings(newColor,newDifficulty){
+ if(busy)return;if(records.length&&!ended&&!confirm('Restart this game with the new settings?'))return;
+ human=newColor;difficulty=newDifficulty;$('menu-color').value=human;$('menu-difficulty').value=difficulty;await startGame();
+}
+$('play').onclick=()=>{if(!connected)return;human=$('menu-color').value;difficulty=$('menu-difficulty').value;startGame();};
+$('again').onclick=startGame;$('result-menu').onclick=()=>showScreen('menu');
+$('game-menu').onclick=()=>{if(!busy&&(!records.length||ended||confirm('Leave this game and return to the main menu?')))showScreen('menu');};
+$('flip').onclick=()=>{flipped=!flipped;render();};
+$('undo').onclick=()=>{if(busy||!snapshots.length)return;const old=snapshots.pop();({state,history,records,lastMove,lastSearch,ended}=old);selected=null;showError('');render();};
+$('resign').onclick=()=>{if(!busy&&!ended&&confirm('Resign this game? Sierra Bot will win.'))finishGame('resign');};
+$('claim').onclick=()=>{if(!busy&&state.canClaim)finishGame('draw');};
+for(const b of document.querySelectorAll('[data-level]'))b.onclick=()=>changeSettings(human,b.dataset.level);
+for(const b of document.querySelectorAll('[data-color]'))b.onclick=()=>changeSettings(b.dataset.color,difficulty);
+for(const [id,target] of [['settings-toggle','menu-settings'],['help-toggle','instructions']])$(id).onclick=()=>{$(target).hidden=!$(target).hidden;$(id).setAttribute('aria-expanded',String(!$(target).hidden));};
+for(const button of document.querySelectorAll('[data-promotion]'))button.onclick=()=>{const move=pendingPromotion.find(m=>m[4]===button.dataset.promotion);$('promotion').close();if(move)humanMove(move);};
+$('cancel-promotion').onclick=()=>{$('promotion').close();pendingPromotion=[];};
+// A downloaded HTML file is playable immediately; C++ is an optional faster runtime.
+async function init(){
+ render();
+ try{
+  if(location.protocol==='file:')throw Error('Use standalone engine');
+  engineMode='cpp';state=await api('state');
+ }catch(error){
+  engineMode='browser';startBrowserEngine();state=await api('state');
+ }
+ history=[state.key];connected=true;$('play').disabled=false;$('offline').hidden=true;render();
+}
+
+init();
+</script>
+</body>
+</html>
